@@ -89,6 +89,11 @@ python -m labeling.download_output \
 ## 🧠 Metodología de Etiquetado
 El sistema utiliza dos enfoques distintos definidos en `prompts.py`:
 
+| Tarea | Input al Modelo | Criterio Principal |
+| :--- | :--- | :--- |
+| **Clickbait** | Solo Titular | Detección de *Curiosity Gap* (ocultación de información) y apelación directa al lector. |
+| **Sensacionalismo** | Titular + Cuerpo | Detección de discrepancias entre título y hechos, lenguaje emotivo y dramatización. |
+
 ### Validación
 La calidad de los datos generados con este código ha sido validada comparando las etiquetas de `gpt-5-mini` contra un modelo superior (`gpt-5.2`) en un subset de control, obteniendo un Agreement Score del 96%.
 
