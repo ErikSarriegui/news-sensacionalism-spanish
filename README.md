@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-Batch_API-green?logo=openai&logoColor=white)](https://platform.openai.com/docs/guides/batch)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/eriksarriegui/news-sensacionalism-spanish)
 
 > **Herramienta de etiquetado sintético** utilizada para generar el dataset de detección de desinformación en noticias (Clickbait y Sensacionalismo). Proyecto desarrollado como parte del TFM del Máster en Ciencia de Datos (UCM).
 
