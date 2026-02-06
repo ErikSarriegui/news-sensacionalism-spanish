@@ -6,16 +6,16 @@
 
 > **Herramienta de etiquetado sintético** utilizada para generar el dataset de detección de desinformación en noticias (Clickbait y Sensacionalismo). Proyecto desarrollado como parte del TFM del Máster en Ciencia de Datos (UCM).
 
-Este repositorio contiene el código necesario para procesar grandes volúmenes de noticias utilizando la **Batch API de OpenAI**, lo que permite reducir costes en un 50% y procesar millones de tokens de forma asíncrona.
+Este repositorio contiene el código necesario para procesar grandes volúmenes de noticias utilizando la **Batch API de OpenAI**, reduciendo costes en un 50%. También permite la ejecución asíncrona local compatible con **Azure OpenAI**.
 
 ---
 
 ## 🚀 Características
 
-* **⚡ Eficiencia de Costes:** Script dedicado (`count_tokens.py`) para estimar el precio antes de lanzar el trabajo usando `tiktoken`.
-* **🛠️ Salidas Estructuradas:** Uso de **Pydantic** para forzar respuestas JSON válidas (schemas definidos en `objects.py`).
-* **🧠 Prompts Especializados:** Criterios lingüísticos definidos para detectar *Curiosity Gap* (Clickbait) y *Manipulación Emocional* (Sensacionalismo).
-* **🔄 Pipeline Completo:** Desde la ingesta de archivos `.parquet` hasta la descarga de resultados `.jsonl`.
+* **⚡ Eficiencia de Costes:** Script dedicado (`count_tokens.py`) para estimar el precio antes de lanzar el trabajo.
+* **🛠️ Salidas Estructuradas:** Uso de **Pydantic** para forzar respuestas JSON válidas.
+* **☁️ Multi-Proveedor:** Soporte para OpenAI Batch API (cola 24h) y ejecución asíncrona directa (OpenAI/Azure).
+* **🧠 Prompts Especializados:** Criterios lingüísticos para detectar *Curiosity Gap* y *Manipulación Emocional*.
 
 ## 📂 Estructura del Proyecto
 
@@ -26,6 +26,7 @@ Este repositorio contiene el código necesario para procesar grandes volúmenes 
 │   ├── create_job.py       # Sube el archivo y crea el Batch Job
 │   ├── download_output.py  # Consulta estado y descarga resultados
 │   ├── generate_file.py    # Convierte DataFrame a JSONL formato Batch
+│   ├── process_async.py    # Ejecución asíncrona local (Soporte Azure)
 │   ├── count_tokens.py     # Estima tokens y costes
 │   ├── objects.py          # Definición de modelos Pydantic (Output Parsers)
 │   └── prompts.py          # Prompts de sistema para los agentes
@@ -46,8 +47,8 @@ cd news-labeling-pipeline
 pip install -r requirements.txt
 ```
 
-## ⚙️ Uso del Pipeline
-El proceso se divide en 4 pasos secuenciales. Asegúrate de tener un archivo .parquet con tus noticias como entrada.
+## ⚙️ Uso: Batch API (Recomendado para ahorro)
+El proceso estándar utiliza la API de Batch de OpenAI (50% descuento, espera de hasta 24h).
 
 1. **Generar archivo de Batch (`.jsonl`)**
 Prepara los datos definiendo el modelo y el tipo de tarea (`clickbait` o `sensacionalism`):
@@ -86,6 +87,19 @@ python -m labeling.download_output \
   --output_file "resultados_etiquetados.jsonl"
 ```
 
+## ⚡ Alternativa: Procesamiento Asíncrono (Azure)
+Si utilizas Azure OpenAI o necesitas resultados inmediatos (sin esperar la cola de Batch), utiliza `process_async.py`. Este script procesa el archivo `.jsonl` generado en el paso 1 directamente desde tu máquina con alta concurrencia.
+
+```bash
+python -m labeling.process_async \
+  --input_file "batch_input.jsonl" \
+  --output_file "batch_output.jsonl" \
+  --provider azure \
+  --azure_endpoint "https://{TU_RECURSO}.openai.azure.com/" \
+  --api_version "{TU_VERSIÓN_API}" \
+  --force_model "{TU_MODELO}}"
+```
+
 ## 🧠 Metodología de Etiquetado
 El sistema utiliza dos enfoques distintos definidos en `prompts.py`:
 
@@ -95,7 +109,7 @@ El sistema utiliza dos enfoques distintos definidos en `prompts.py`:
 | **Sensacionalismo** | Titular + Cuerpo | Detección de discrepancias entre título y hechos, lenguaje emotivo y dramatización. |
 
 ### Validación
-La calidad de los datos generados con este código ha sido validada comparando las etiquetas de `gpt-5-mini` contra un modelo superior (`gpt-5.2`) en un subset de control, obteniendo un Agreement Score del 96%.
+La calidad de los datos generados con este código ha sido validada comparando las etiquetas de `gpt-5-mini` contra un modelo superior (`gpt-5.2`) en un subset de control, obteniendo un Agreement Score del 86%.
 
 ## 🔗 Dataset
 El dataset final generado con estas herramientas está disponible (con acceso restringido para evaluación académica) en Hugging Face:
